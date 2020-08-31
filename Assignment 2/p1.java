@@ -7,6 +7,9 @@
 // when both characters are from lowercase or uppercase abc
 // it is treated seperately.
 
+// Earlier sorted lexicographically+unicode
+// Now sorting by unicode
+
 import java.util.Scanner;
 public class p1{
     public static void main(String args[]){
@@ -29,27 +32,28 @@ public class p1{
         while(i<n){
 
             int one = s1.charAt(i), two = s2.charAt(i);
-            // case when both chars from strings are in abc lower or uppercase
-            if(((65<=one && one<=90) || (97<=one && one<=120)) && ((65<=two && two<=90) || (97<=two && two<=120))){
-                if(one-two==32 || two-one==32 || one==two){
-                   i+=1;
-                   continue;
-                }
-                else if(one-two<32 || two-one>32){
-                    equal = false;
-                    System.out.println("Smaller string: "+s1);
-                    System.out.println("Larger string: "+s2);
-                    break;
-                }
-                else{
-                equal = false;
-                System.out.println("Smaller string: "+s2);
-                System.out.println("Larger string: "+s1);
-                break;
-                }
-            }
-
-            else if(one<two){
+//             // case when both chars from strings are in abc lower or uppercase
+//             if(((65<=one && one<=90) || (97<=one && one<=120)) && ((65<=two && two<=90) || (97<=two && two<=120))){
+//                 if(one-two==32 || two-one==32 || one==two){
+//                    i+=1;
+//                    continue;
+//                 }
+//                 else if(one-two<32 || two-one>32){
+//                     equal = false;
+//                     System.out.println("Smaller string: "+s1);
+//                     System.out.println("Larger string: "+s2);
+//                     break;
+//                 }
+//                 else{
+//                 equal = false;
+//                 System.out.println("Smaller string: "+s2);
+//                 System.out.println("Larger string: "+s1);
+//                 break;
+//                 }
+//             }
+//
+//             else
+            if(one<two){
                 equal = false;
                 System.out.println("Smaller string: "+s1);
                 System.out.println("Larger string: "+s2);
