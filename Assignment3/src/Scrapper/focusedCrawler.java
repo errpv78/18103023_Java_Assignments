@@ -38,37 +38,45 @@ public class focusedCrawler {
 		    Set<String> urlSet = new HashSet<String>();
 		    int urlCount = 1;
 	
-		    
-		    
-		    
+	
 		    // Getting all urls from seed
 		    ArrayList<String> urlList1 = new ArrayList<String>();
 
 		    
 		    // Adding seed url
-			String seedUrl = "https://pec.ac.in/";
-		    urlList1.add(seedUrl);
+			String seedUrl = "https://pec.ac.in/cse";
+//			urlList1.add("");
+		    urlList.add(seedUrl);
+		    urlSet.add(seedUrl);
 		    
-		    System.out.println("Getting all links from seed...");
-		    Document seed = Jsoup.connect(seedUrl).get();
-		    Elements links = seed.select("a[href]");
-		    for (Element link : links) {
-		    	String Url, urlText;
-		    	Url = link.absUrl("href");
-		    	
-		    	if(Url.contains("https://pec.ac.in/")) {
-			        urlList1.add(Url);
-		    	}
-		    }
-		    
+		    Document seed;
+		    Elements links;
+//		    int depth = 0;
+			
+			
 		    System.out.println("Total links received from seed: " + urlList1.size());
 		    
 		    
 		    System.out.println("Forming initial faculty pages list...");
-		    System.out.println("Total links to cover: " + urlList1.size());
-		    for(int i=0;i<urlList1.size();i++) {
+		    System.out.println("Total depth to cover: 6");
+		    urlCount = 0;
+		    for(int i=0;i<urlList.size();i++) {
+//		    	System.out.println(urlList1.get(i));
+//		    	System.out.println(i);
+		    	if(urlCount>=1000) {
+		    		break;
+		    	}
 		    	try {
-		    		String currUrl = urlList1.get(i);
+		    		String currUrl = urlList.get(i);
+			    	System.out.println(currUrl);
+//		    		if(currUrl.equals("")) {
+//		    			urlList1.add("");
+//		    			depth += 1;
+//		    			System.out.println("Current Depth: " + depth);
+//		    			System.out.println("Urls Scrapped: " + (i+1-depth));
+//		    			continue;
+//		    		}
+//
 		    		seed = Jsoup.connect(currUrl).get();
 
 				    links = seed.select("a[href]");
@@ -76,9 +84,10 @@ public class focusedCrawler {
 				    	String Url;
 				    	Url = link.absUrl("href");
 				    	
-				    	if(!urlSet.contains(Url) && Url.contains("https://pec.ac.in/") && Url.contains("faculty")) {
+				    	if(!urlSet.contains(Url) && Url.contains("https://pec.ac.in/")) {
 					        urlList.add(Url);
 					        urlSet.add(Url);
+					        urlCount++;
 				    	}
 				    }
 
@@ -86,11 +95,9 @@ public class focusedCrawler {
 		    	catch(IOException e) {
 		    		e.printStackTrace();
 		    	}
-		    	if(i%10==0) {
-			    	System.out.println("Progress: " + i + " out of " + urlList1.size());		    		
-		    	}
+		    	System.out.println(urlCount);
 		    }
-		    System.out.println("Initial faculty concerned pages: " + urlList.size());
+		    System.out.println("Total urls obtained: " + urlList.size());
 		    
 		    
 		    String currUrl;
@@ -106,14 +113,8 @@ public class focusedCrawler {
 				    
 				    // get the page title
 				    String title = seed.title();
-				    System.out.println("title: " + title);
+//				    System.out.println("title: " + title);
 				    
-				    csvwriterText.writeNext(new String[] {});
-				    csvwriterText.writeNext(new String[] {"For url: " + (i+1), currUrl});
-				    csvwriterText.writeNext(new String[] {"Title ", title});
-				    
-				    csvwriterUrl.writeNext(new String[] {});
-				    csvwriterUrl.writeNext(new String[] {"For url: " + (i+1), currUrl});
 				    
 				    
 				    // get all links in page
@@ -133,79 +134,83 @@ public class focusedCrawler {
 					        urlCount++;
 				    	}
 				    }
+				    System.out.println(currUrl + " " + i);
 				    
-				    
-				    // get all links in page
-				    Elements para = seed.select("p");
-				    for (Element p : para) {
-				        // get the value from the href attribute
-				    	String text;
-				    	text = p.text();
-	//			        System.out.println("p: " + text);
-				    	if(text.length()>2) {
-					        csvwriterText.writeNext(new String[] {"p", text});			    		
-				    	}
+				    if(currUrl.contains("faculty")) {
+					    // get all links in page
+					    Elements para = seed.select("p");
+					    for (Element p : para) {
+					        // get the value from the href attribute
+					    	String text;
+					    	text = p.text();
+		//			        System.out.println("p: " + text);
+					    	if(text.length()>2) {
+						        csvwriterText.writeNext(new String[] {"p", text});			    		
+					    	}
+					    }
+					    
+					    Elements h1 = seed.select("h1");
+					    for (Element h : h1) {
+					        // get the value from the href attribute
+					    	String text;
+					    	text = h.text();
+		//			        System.out.println("h1: " + text);
+					    	if(text.length()>0) {
+						        csvwriterText.writeNext(new String[] {"h1", text});
+					    	}
+					    }
+		
+					    Elements h2 = seed.select("h2");
+					    for (Element h : h2) {
+					        // get the value from the href attribute
+					    	String text;
+					    	text = h.text();
+		//			        System.out.println("h2: " + text);
+					    	if(text.length()>0) {
+					    		csvwriterText.writeNext(new String[] {"h2", text});
+					    	}
+					    }
+		
+					    Elements h3 = seed.select("h3");
+					    for (Element h : h3) {
+					        // get the value from the href attribute
+					    	String text;
+					    	text = h.text();
+		//			        System.out.println("h3: " + text);
+					    	if(text.length()>0) {
+					    		csvwriterText.writeNext(new String[] {"h3", text});
+					    	}
+					    }
+		
+					    Elements h4 = seed.select("h4");
+					    for (Element h : h4) {
+					        // get the value from the href attribute
+					    	String text;
+					    	text = h.text();
+		//			        System.out.println("h4: " + text);
+					    	if(text.length()>0) {
+					    		csvwriterText.writeNext(new String[] {"h4", text});
+					    	}
+					    }
+					    
+					    Elements img = seed.select("img");
+					    for (Element im : img) {
+					        // get the value from the href attribute
+					    	String text, src;
+					    	text = im.text();
+					    	src = im.attr("src");
+		//			        System.out.println("image: " + text);
+		//			        System.out.println("source: " + src);
+					    	if(text.length()>0 && src.length()>0) {
+					    		csvwriterText.writeNext(new String[] {"img", src});
+					    	}
+					    }
+				    	
+						System.out.println("Current Url Count: " + (i+1));
+						System.out.println("Current Url: " + currUrl);
+						System.out.println();
+						csvwriterText.writeNext(new String[] {""});
 				    }
-				    
-				    Elements h1 = seed.select("h1");
-				    for (Element h : h1) {
-				        // get the value from the href attribute
-				    	String text;
-				    	text = h.text();
-	//			        System.out.println("h1: " + text);
-				    	if(text.length()>0) {
-					        csvwriterText.writeNext(new String[] {"h1", text});
-				    	}
-				    }
-	
-				    Elements h2 = seed.select("h2");
-				    for (Element h : h2) {
-				        // get the value from the href attribute
-				    	String text;
-				    	text = h.text();
-	//			        System.out.println("h2: " + text);
-				    	if(text.length()>0) {
-				    		csvwriterText.writeNext(new String[] {"h2", text});
-				    	}
-				    }
-	
-				    Elements h3 = seed.select("h3");
-				    for (Element h : h3) {
-				        // get the value from the href attribute
-				    	String text;
-				    	text = h.text();
-	//			        System.out.println("h3: " + text);
-				    	if(text.length()>0) {
-				    		csvwriterText.writeNext(new String[] {"h3", text});
-				    	}
-				    }
-	
-				    Elements h4 = seed.select("h4");
-				    for (Element h : h4) {
-				        // get the value from the href attribute
-				    	String text;
-				    	text = h.text();
-	//			        System.out.println("h4: " + text);
-				    	if(text.length()>0) {
-				    		csvwriterText.writeNext(new String[] {"h4", text});
-				    	}
-				    }
-				    
-				    Elements img = seed.select("img");
-				    for (Element im : img) {
-				        // get the value from the href attribute
-				    	String text, src;
-				    	text = im.text();
-				    	src = im.attr("src");
-	//			        System.out.println("image: " + text);
-	//			        System.out.println("source: " + src);
-				    	if(text.length()>0 && src.length()>0) {
-				    		csvwriterText.writeNext(new String[] {"img", src});
-				    	}
-				    }
-					System.out.println("Current Url Count: " + (i+1));
-					System.out.println("Current Url: " + currUrl);
-					System.out.println();
 				    
 				}
 				
